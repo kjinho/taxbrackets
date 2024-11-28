@@ -14,6 +14,7 @@ Further documentation can be found at <https://hexdocs.pm/taxbrackets>. -->
 ```sh
 gleam run   # Run the project
 gleam test  # Run the tests
+gleam run -m lustre/dev start # live-reloading development
 ```
 
 ## License 

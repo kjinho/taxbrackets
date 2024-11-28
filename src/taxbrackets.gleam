@@ -9,9 +9,6 @@ import lustre/attribute
 import lustre/element
 import lustre/element/html
 import lustre/event
-import lustre/ui
-import lustre/ui/input
-import lustre/ui/styles
 
 pub fn main() {
   let app = lustre.simple(init, update, view)
@@ -36,7 +33,7 @@ fn init(_flags) -> Model {
 }
 
 // update 
-// ignores "$" and ",", and ignores everything 
+// ignores " ", "$", and ",", and ignores everything 
 // after the decimal point
 fn update(_model: Model, msg: Msg) -> Model {
   let res = case msg {
@@ -44,6 +41,7 @@ fn update(_model: Model, msg: Msg) -> Model {
       s
       |> string.replace("$", "")
       |> string.replace(",", "")
+      |> string.replace(" ", "")
   }
   let strnum = case string.split_once(res, ".") {
     Ok(#(a, _)) -> a
@@ -57,98 +55,155 @@ fn update(_model: Model, msg: Msg) -> Model {
 
 // view
 fn view(model: Model) -> element.Element(Msg) {
-  ui.centre(
-    [],
-    ui.aside(
-      //[],
-      [
-        //aside.content_last(), 
-      //aside.align_centre(),
-      ],
-      ui.stack([], [
-        ui.button([], [html.text("Background")]),
-        ui.button([], [html.text("Calculator")]),
-      ]),
-      ui.stack([], [
-        styles.elements(),
-        ui.stack([], [
-          ui.field(
-            [],
-            [html.text("Income")],
-            ui.input([
-              case model {
-                Some(_) -> input.primary()
-                None -> input.error()
-              },
-              //attribute.placeholder("Income"),
-              attribute.value(option.unwrap(model, 0) |> format_number()),
-              event.on_input(Change),
-            ]),
-            [
-              html.div(
-                case model {
-                  Some(_) -> []
-                  None -> [attribute.style([#("color", "red")])]
-                },
-                [html.text("Input numbers only")],
-              ),
-            ],
-          ),
-          ui.field(
-            [],
-            [html.text("Taxable Income")],
-            ui.button([], [
-              html.text(case model {
-                Some(s) ->
-                  s
-                  |> calculate_taxable_income(standarddeduction2023single)
-                  |> format_number()
-                  |> fn(x) { "$" <> x }
-                None -> "Invalid Input"
-              }),
-            ]),
-            [],
-          ),
-          ui.field(
-            [],
-            [html.text("Federal Income Tax")],
-            ui.button([], [
-              html.text(case model {
-                Some(s) ->
-                  s
-                  |> calculate_taxable_income(standarddeduction2023single)
-                  |> calculate_taxes(taxbracket2023single)
-                  |> format_number()
-                  |> fn(x) { "$" <> x }
-                None -> "Invalid Input"
-              }),
-            ]),
-            [],
-          ),
-          ui.field(
-            [],
-            [html.text("Effective Tax Rate")],
-            ui.button([], [
-              html.text(case model {
-                Some(s) ->
-                  {
-                    s
-                    |> calculate_effective_tax_rate(
-                      standarddeduction2023single,
-                      taxbracket2023single,
-                    )
-                    |> format_percentage()
-                  }
-                  <> "%"
-                None -> "Invalid Input"
-              }),
-            ]),
-            [],
-          ),
+  html.div([attribute.class("columns")], [
+    html.div([attribute.class("column")], [
+      html.div([attribute.class("tabs")], [
+        html.ul([], [
+          html.li([], [html.a([], [html.text("Background")])]),
+          html.li([attribute.class("is-active")], [
+            html.a([], [html.text("Calculator")]),
+          ]),
         ]),
       ]),
-    ),
-  )
+      html.div([attribute.class("field")], [
+        html.label([attribute.class("label")], [html.text("Income")]),
+        html.div([attribute.class("control")], [
+          html.input([
+            attribute.class("button is-primary is-outlined"),
+            attribute.value("$" <> option.unwrap(model, 0) |> format_number()),
+            event.on_input(Change),
+          ]),
+        ]),
+        html.p([attribute.class("help")], [html.text("Input number above.")]),
+      ]),
+      html.div([attribute.class("field")], [
+        html.label([attribute.class("label")], [html.text("Taxable Income")]),
+        html.div([attribute.class("control")], [
+          html.input([
+            attribute.class("button is-link"),
+            attribute.disabled(True),
+            attribute.value(case model {
+              Some(s) ->
+                s
+                |> calculate_taxable_income(standarddeduction2023single)
+                |> format_number()
+                |> fn(x) { "$" <> x }
+              None -> "Invalid Input"
+            }),
+            event.on_input(Change),
+          ]),
+        ]),
+      ]),
+      html.div([attribute.class("field")], [
+        html.label([attribute.class("label")], [html.text("Federal Income Tax")]),
+        html.div([attribute.class("control")], [
+          html.input([
+            attribute.class("button is-info"),
+            attribute.disabled(True),
+            attribute.value(case model {
+              Some(s) ->
+                s
+                |> calculate_taxable_income(standarddeduction2023single)
+                |> calculate_taxes(taxbracket2023single)
+                |> format_number()
+                |> fn(x) { "$" <> x }
+              None -> "Invalid Input"
+            }),
+            event.on_input(Change),
+          ]),
+        ]),
+      ]),
+      html.div([attribute.class("field")], [
+        html.label([attribute.class("label")], [html.text("Effective Tax Rate")]),
+        html.div([attribute.class("control")], [
+          html.input([
+            attribute.class("button is-warning"),
+            attribute.disabled(True),
+            attribute.value(case model {
+              Some(s) ->
+                {
+                  s
+                  |> calculate_effective_tax_rate(
+                    standarddeduction2023single,
+                    taxbracket2023single,
+                  )
+                  |> format_percentage()
+                }
+                <> "%"
+              None -> "Invalid Input"
+            }),
+            event.on_input(Change),
+          ]),
+        ]),
+      ]),
+    ]),
+  ])
+  //     ]
+  //           [
+  //             html.div(
+  //               case model {
+  //                 Some(_) -> []
+  //                 None -> [attribute.style([#("color", "red")])]
+  //               },
+  //               [html.text("Input numbers only")],
+  //             ),
+  //           ],
+  //         ),
+  //         ui.field(
+  //           [],
+  //           [html.text("Taxable Income")],
+  //           ui.button([], [
+  //             html.text(case model {
+  //               Some(s) ->
+  //                 s
+  //                 |> calculate_taxable_income(standarddeduction2023single)
+  //                 |> format_number()
+  //                 |> fn(x) { "$" <> x }
+  //               None -> "Invalid Input"
+  //             }),
+  //           ]),
+  //           [],
+  //         ),
+  //         ui.field(
+  //           [],
+  //           [html.text("Federal Income Tax")],
+  //           ui.button([], [
+  //             html.text(case model {
+  //               Some(s) ->
+  //                 s
+  //                 |> calculate_taxable_income(standarddeduction2023single)
+  //                 |> calculate_taxes(taxbracket2023single)
+  //                 |> format_number()
+  //                 |> fn(x) { "$" <> x }
+  //               None -> "Invalid Input"
+  //             }),
+  //           ]),
+  //           [],
+  //         ),
+  //         ui.field(
+  //           [],
+  //           [html.text("Effective Tax Rate")],
+  //           ui.button([], [
+  //             html.text(case model {
+  //               Some(s) ->
+  //                 {
+  //                   s
+  //                   |> calculate_effective_tax_rate(
+  //                     standarddeduction2023single,
+  //                     taxbracket2023single,
+  //                   )
+  //                   |> format_percentage()
+  //                 }
+  //                 <> "%"
+  //               None -> "Invalid Input"
+  //             }),
+  //           ]),
+  //           [],
+  //         ),
+  //       ]),
+  //     ]),
+  //   ),
+  // )
 }
 
 // number formatting
