@@ -10,8 +10,6 @@ import lustre/element
 import lustre/element/html
 import lustre/event
 import lustre/ui
-import lustre/ui/aside
-import lustre/ui/button
 import lustre/ui/input
 import lustre/ui/styles
 
