@@ -69,15 +69,20 @@ fn change_string_helper(s: String) -> Option(Int) {
 
 // view
 fn view(model: Model) -> element.Element(Msg) {
-  html.div([attribute.class("columns")], [
-    html.div([attribute.class("column")], [
-      view_tabs(model),
-      case model.tab {
-        Background -> view_background(model)
-        Definitions -> view_definitions(model)
-        Calculator -> view_calculator(model)
-        Bibliography -> view_bibliography(model)
-      },
+  html.div([attribute.class("container")], [
+    view_tabs(model),
+    html.div([attribute.class("columns")], [
+      html.div([attribute.class("column")], [
+        case model.tab {
+          Background -> view_background(model)
+          Definitions -> view_definitions(model)
+          Calculator -> view_calculator_instructions(model)
+          Bibliography -> view_bibliography(model)
+        },
+      ]),
+      html.div([attribute.class("column is-one-third")], [
+        view_calculator_calc(model),
+      ]),
     ]),
   ])
 }
@@ -346,14 +351,14 @@ fn view_bibliography(_model: Model) -> element.Element(Msg) {
   ])
 }
 
-fn view_calculator(model: Model) -> element.Element(Msg) {
-  html.div([attribute.class("columns")], [
-    html.div([attribute.class("column")], [view_calculator_instructions(model)]),
-    html.div([attribute.class("column is-one-third")], [
-      view_calculator_calc(model),
-    ]),
-  ])
-}
+// fn view_calculator(model: Model) -> element.Element(Msg) {
+//   html.div([attribute.class("columns")], [
+//     html.div([attribute.class("column")], [view_calculator_instructions(model)]),
+//     html.div([attribute.class("column is-one-third")], [
+//       view_calculator_calc(model),
+//     ]),
+//   ])
+// }
 
 fn view_calculator_instructions(_model: Model) -> element.Element(Msg) {
   html.div([attribute.class("content")], [
