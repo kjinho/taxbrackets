@@ -88,97 +88,35 @@ fn view(model: Model) -> element.Element(Msg) {
 }
 
 fn view_tabs(model: Model) -> element.Element(Msg) {
+  let #(background, definitions, calculator, bibliography) = case model.tab {
+    Background -> #("is-active", "is-inactive", "is-inactive", "is-inactive")
+    Definitions -> #("is-inactive", "is-active", "is-inactive", "is-inactive")
+    Calculator -> #("is-inactive", "is-inactive", "is-active", "is-inactive")
+    Bibliography -> #("is-inactive", "is-inactive", "is-inactive", "is-active")
+  }
   html.div([attribute.class("tabs")], [
-    html.ul([], case model.tab {
-      Background -> [
-        html.li([attribute.class("is-active")], [
-          html.a([event.on_click(TabSwitch(Background))], [
-            html.text("Background"),
-          ]),
+    html.ul([], [
+      html.li([attribute.class(background)], [
+        html.a([event.on_click(TabSwitch(Background))], [
+          html.text("Background"),
         ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Definitions))], [
-            html.text("Definitions"),
-          ]),
+      ]),
+      html.li([attribute.class(definitions)], [
+        html.a([event.on_click(TabSwitch(Definitions))], [
+          html.text("Definitions"),
         ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Calculator))], [
-            html.text("Calculator"),
-          ]),
+      ]),
+      html.li([attribute.class(calculator)], [
+        html.a([event.on_click(TabSwitch(Calculator))], [
+          html.text("Calculator"),
         ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Bibliography))], [
-            html.text("Bibliography"),
-          ]),
+      ]),
+      html.li([attribute.class(bibliography)], [
+        html.a([event.on_click(TabSwitch(Bibliography))], [
+          html.text("Bibliography"),
         ]),
-      ]
-      Definitions -> [
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Background))], [
-            html.text("Background"),
-          ]),
-        ]),
-        html.li([attribute.class("is-active")], [
-          html.a([event.on_click(TabSwitch(Definitions))], [
-            html.text("Definitions"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Calculator))], [
-            html.text("Calculator"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Bibliography))], [
-            html.text("Bibliography"),
-          ]),
-        ]),
-      ]
-      Calculator -> [
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Background))], [
-            html.text("Background"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Definitions))], [
-            html.text("Definitions"),
-          ]),
-        ]),
-        html.li([attribute.class("is-active")], [
-          html.a([event.on_click(TabSwitch(Calculator))], [
-            html.text("Calculator"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Bibliography))], [
-            html.text("Bibliography"),
-          ]),
-        ]),
-      ]
-      Bibliography -> [
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Background))], [
-            html.text("Background"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Definitions))], [
-            html.text("Definitions"),
-          ]),
-        ]),
-        html.li([attribute.class("is-inactive")], [
-          html.a([event.on_click(TabSwitch(Calculator))], [
-            html.text("Calculator"),
-          ]),
-        ]),
-        html.li([attribute.class("is-active")], [
-          html.a([event.on_click(TabSwitch(Bibliography))], [
-            html.text("Bibliography"),
-          ]),
-        ]),
-      ]
-    }),
+      ]),
+    ]),
   ])
 }
 
